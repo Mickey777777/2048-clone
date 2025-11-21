@@ -16,7 +16,7 @@ public class GameBoard {
 
     private void addRandomTile(){
         List<Tile> emptyTiles = getEmptyTiles();
-
+        if(emptyTiles.isEmpty()) return;
         Tile randomTile = emptyTiles.get((int) (Math.random() * emptyTiles.size()));
         grid[randomTile.getRow()][randomTile.getCol()] = 2;
     }
@@ -107,13 +107,17 @@ public class GameBoard {
     public void moveLeft(){
         rotateLeft();
         moveUp();
-        rotateRight();
+        rotateLeft();
+        rotateLeft();
+        rotateLeft();
     }
 
     public void moveRight(){
         rotateRight();
         moveUp();
-        rotateLeft();
+        rotateRight();
+        rotateRight();
+        rotateRight();
     }
 
 
