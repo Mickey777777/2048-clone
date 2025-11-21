@@ -18,7 +18,7 @@ public class GameBoard {
         List<Tile> emptyTiles = getEmptyTiles();
 
         Tile randomTile = emptyTiles.get((int) (Math.random() * emptyTiles.size()));
-        grid[randomTile.getCol()][randomTile.getRow()] = 2;
+        grid[randomTile.getRow()][randomTile.getCol()] = 2;
     }
 
     private List<Tile> getEmptyTiles(){
@@ -84,6 +84,7 @@ public class GameBoard {
                 }
             }
         }
+        addRandomTile();
     }
 
     public void moveDown(){
