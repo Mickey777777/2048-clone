@@ -70,16 +70,25 @@ public class GameBoard {
     }
 
     public void moveUp(){
+        boolean[][] merged = new boolean[GRID_SIZE][GRID_SIZE];
+
         for(int i=1; i<GRID_SIZE; i++){
             for(int j=0; j<GRID_SIZE; j++){
                 if(grid[i][j]!=0){
                     int endY = i;
-                    while(endY>0 && grid[endY-1][j]==0) {
+                    while(endY>0) {
+                        if(grid[endY-1][j] == grid[endY][j] && !merged[endY-1][j]){
+                            grid[endY-1][j] += grid[endY][j];
+                            grid[endY][j] = 0;
+                            merged[endY-1][j] = true;
+                            break;
+                        }else if(grid[endY-1][j] == 0){
+                            grid[endY-1][j] = grid[endY][j];
+                            grid[endY][j] = 0;
+                        }else{
+                            break;
+                        }
                         endY--;
-                    }
-                    if(endY != i) {
-                        grid[endY][j] = grid[i][j];
-                        grid[i][j] = 0;
                     }
                 }
             }
