@@ -1,5 +1,6 @@
 public class Tile {
-    private int row, col;
+    private final int row;
+    private final int col;
 
     public Tile(int row, int col) {
         this.row = row;
