@@ -13,7 +13,7 @@ public class BoardPanel extends JPanel {
         setPreferredSize(new Dimension(PANEL_SIZE, PANEL_SIZE));
         setBackground(new Color(153, 139, 124));
 
-        InputPanel.setupKeyListener(this);
+        InputPanel.setupKeyListener(this, board);
     }
 
     @Override
