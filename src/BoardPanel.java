@@ -2,17 +2,14 @@ import javax.swing.*;
 import java.awt.*;
 
 public class BoardPanel extends JPanel {
-    private static final int TILE_SIZE = 100;
-    private static final int MARGIN = 10;
-
-    private GameBoard board;
+    private final GameBoard board;
 
     public BoardPanel(GameBoard board){
         this.board = board;
-        int GRID_SIZE = board.getSize();
-        int panelSize = GRID_SIZE * (TILE_SIZE + MARGIN) + MARGIN;
-        setPreferredSize(new Dimension(panelSize, panelSize));
+        setPreferredSize(new Dimension(GameConstants.PANEL_SIZE, GameConstants.PANEL_SIZE));
         setBackground(new Color(153, 139, 124));
+
+        InputPanel.setupKeyListener(this);
     }
 
     @Override
@@ -31,10 +28,10 @@ public class BoardPanel extends JPanel {
                 Color color = getTileColor(number);
                 g2d.setColor(color);
 
-                int x = j*(TILE_SIZE + MARGIN) + MARGIN;
-                int y = i*(TILE_SIZE + MARGIN) + MARGIN;
+                int x = j*(GameConstants.TILE_SIZE + GameConstants.MARGIN) + GameConstants.MARGIN;
+                int y = i*(GameConstants.TILE_SIZE + GameConstants.MARGIN) + GameConstants.MARGIN;
 
-                g2d.fillRoundRect(x, y, TILE_SIZE, TILE_SIZE, 10, 10);
+                g2d.fillRoundRect(x, y, GameConstants.TILE_SIZE, GameConstants.TILE_SIZE, 10, 10);
 
                 if(number != 0) drawNumber(g2d, x, y, number);
             }
@@ -51,8 +48,8 @@ public class BoardPanel extends JPanel {
         String numberString = Integer.toString(number);
         FontMetrics fm = g2d.getFontMetrics();
 
-        int numberX = x + (TILE_SIZE - fm.stringWidth(numberString)) / 2;
-        int numberY = y + (TILE_SIZE - fm.getHeight())/2 + fm.getAscent();
+        int numberX = x + (GameConstants.TILE_SIZE - fm.stringWidth(numberString)) / 2;
+        int numberY = y + (GameConstants.TILE_SIZE - fm.getHeight())/2 + fm.getAscent();
 
         g2d.drawString(numberString, numberX, numberY);
     }
