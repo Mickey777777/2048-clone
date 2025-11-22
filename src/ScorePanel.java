@@ -8,8 +8,12 @@ public class ScorePanel extends JPanel {
     private static final int BOX_WIDTH = 80;
     private static final int BOX_HEIGHT = 50;
     private static final int BOX_MARGIN = 50;
+    private int best = 0;
 
-    public ScorePanel() {
+    GameBoard board;
+
+    public ScorePanel(GameBoard board) {
+        this.board = board;
         setPreferredSize(new Dimension(PANEL_WIDTH, PANEL_HEIGHT));
         setBackground(new Color(250, 248, 241));
     }
@@ -23,13 +27,13 @@ public class ScorePanel extends JPanel {
         int scoreX = PANEL_WIDTH / 2 - BOX_WIDTH / 2 - BOX_MARGIN;
         int scoreY = PANEL_HEIGHT / 2 - BOX_HEIGHT / 2;
         drawScoreBox(scoreX, scoreY, g2d, new Color(233, 231, 218));
-        drawScore(scoreX, scoreY, g2d, 100, "SCORE");
+        drawScore(scoreX, scoreY, g2d, board.getScore(), "SCORE");
         // best
         int bestX = PANEL_WIDTH / 2 - BOX_WIDTH / 2 + BOX_MARGIN;
         int bestY = PANEL_HEIGHT / 2 - BOX_HEIGHT / 2;
         drawScoreBox(bestX, bestY, g2d, new Color(250, 248, 241));
         drawBoxBorder(bestX, bestY, g2d, new Color(233, 231, 218));
-        drawScore(bestX, bestY, g2d, 1000, "BEST");
+        drawScore(bestX, bestY, g2d, best, "BEST");
     }
 
     private void drawScoreBox(int x, int y, Graphics2D g2d, Color color) {

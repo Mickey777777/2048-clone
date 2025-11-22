@@ -8,12 +8,12 @@ public class BoardPanel extends JPanel {
 
     private final GameBoard board;
 
-    public BoardPanel(GameBoard board){
+    public BoardPanel(GameBoard board, JPanel scorePanel){
         this.board = board;
         setPreferredSize(new Dimension(PANEL_SIZE, PANEL_SIZE));
         setBackground(new Color(153, 139, 124));
 
-        InputPanel.setupKeyListener(this, board);
+        InputPanel.setupKeyListener(this, board, scorePanel);
     }
 
     @Override

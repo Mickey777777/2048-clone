@@ -3,39 +3,40 @@ import java.awt.event.KeyEvent;
 import javax.swing.*;
 
 public class InputPanel {
-    public static void setupKeyListener(JPanel panel, GameBoard board) {
-        panel.setFocusable(true);
-        panel.addKeyListener(new KeyAdapter() {
+    public static void setupKeyListener(JPanel boardPanel, GameBoard board, JPanel scorePanel) {
+        boardPanel.setFocusable(true);
+        boardPanel.addKeyListener(new KeyAdapter() {
             @Override
             public void keyPressed(KeyEvent e){
                 int key = e.getKeyCode();
                 switch (key) {
                     case KeyEvent.VK_UP:
                         System.out.println("UP");
-                        handleMove(board::moveUp, panel, board);
+                        handleMove(board::moveUp, boardPanel, board, scorePanel);
                         break;
                     case KeyEvent.VK_DOWN:
                         System.out.println("DOWN");
-                        handleMove(board::moveDown, panel, board);
+                        handleMove(board::moveDown, boardPanel, board, scorePanel);
                         break;
                     case KeyEvent.VK_LEFT:
                         System.out.println("LEFT");
-                        handleMove(board::moveLeft, panel, board);
+                        handleMove(board::moveLeft, boardPanel, board, scorePanel);
                         break;
                     case KeyEvent.VK_RIGHT:
                         System.out.println("RIGHT");
-                        handleMove(board::moveRight, panel, board);
+                        handleMove(board::moveRight, boardPanel, board, scorePanel);
                         break;
                 }
             }
         });
     }
 
-    private static void handleMove(Runnable moveAction, JPanel panel, GameBoard board) {
+    private static void handleMove(Runnable moveAction, JPanel panel, GameBoard board, JPanel scorePanel) {
         moveAction.run();
         if(GameStateChecker.isGameOver(board.getGrid())){
             System.out.println("Game Over");
         }
         panel.repaint();
+        scorePanel.repaint();
     }
 }
