@@ -21,6 +21,10 @@ public class BoardPanel extends JPanel {
         super.paintComponent(g);
         Graphics2D g2d = (Graphics2D) g;
         drawGrid(g2d);
+
+        if(GameStateChecker.isGameOver(board.getGrid())) {
+            GameOverOverlay.draw(g2d, board.getScore());
+        }
     }
 
     private void drawGrid(Graphics2D g2d) {
