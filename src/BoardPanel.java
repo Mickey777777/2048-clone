@@ -70,26 +70,31 @@ public class BoardPanel extends JPanel {
     }
 
     private void drawAnimatingTiles(Graphics2D g2d) {
-        for(AnimatedTileMove tile : gameBoard.getLastMoveTiles()){
+        for(AnimatedTileMove tile : animatedTileMoves){
             int x = tile.getCurrentX(animationProgress);
             int y = tile.getCurrentY(animationProgress);
             int value = tile.getValue();
             boolean isMerged = tile.isMerged();
 
-            if(isMerged && animationProgress>=1.0){
+            if(isMerged && animationProgress>0.8){
                 value*=2;
             }
 
             g2d.setColor(getTileColor(value));
             g2d.fillRoundRect(x, y, TILE_SIZE, TILE_SIZE, 10, 10);
+
             drawNumber(g2d, x, y, value);
         }
     }
 
     private void drawStaticTiles(Graphics2D g2d) {
         boolean[][] isMoving = new boolean[GRID_SIZE][GRID_SIZE];
+        boolean[][] isMergedTarget = new boolean[GRID_SIZE][GRID_SIZE];
+        boolean[][] isDestination = new boolean[GRID_SIZE][GRID_SIZE];
         for(AnimatedTileMove tile : gameBoard.getLastMoveTiles()){
             isMoving[tile.getFromRow()][tile.getFromCol()] = true;
+            isDestination[tile.getToRow()][tile.getToCol()] = true;
+            if(tile.isMerged()) isMergedTarget[tile.getFromRow()][tile.getFromCol()] = true;
         }
         // 배경
         for(int i=0; i<GRID_SIZE; i++){
@@ -108,12 +113,11 @@ public class BoardPanel extends JPanel {
         for(int i=0; i<GRID_SIZE; i++){
             for(int j=0; j<GRID_SIZE; j++){
                 int number = gameBoard.getNum(i,j);
-                if(number!=0 && !isMoving[i][j]){
-                    g2d.setColor(getTileColor(number));
-
+                if(number!=0 && !isMoving[i][j] && !isMergedTarget[i][j] && !isDestination[i][j]){
                     int x = j*(TILE_SIZE + MARGIN) + MARGIN;
                     int y = i*(TILE_SIZE + MARGIN) + MARGIN;
 
+                    g2d.setColor(getTileColor(number));
                     g2d.fillRoundRect(x, y, TILE_SIZE, TILE_SIZE, 10, 10);
                     drawNumber(g2d, x, y, number);
                 }
@@ -134,7 +138,6 @@ public class BoardPanel extends JPanel {
                 int y = i*(TILE_SIZE + MARGIN) + MARGIN;
 
                 g2d.fillRoundRect(x, y, TILE_SIZE, TILE_SIZE, 10, 10);
-
                 if(number != 0) drawNumber(g2d, x, y, number);
             }
         }
