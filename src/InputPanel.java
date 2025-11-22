@@ -64,7 +64,7 @@ public class InputPanel {
             ((ScorePanel) scorePanel).updateBest(gameBoard.getScore());
             System.out.println("Game Over");
         }
-        boardPanel.repaint();
+        ((BoardPanel) boardPanel).startMoveAnimation(gameBoard.getLastMoveTiles());
         scorePanel.repaint();
     }
 }
