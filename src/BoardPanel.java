@@ -1,39 +1,132 @@
 import javax.swing.*;
 import java.awt.*;
+import java.util.ArrayList;
+import java.util.List;
 
 public class BoardPanel extends JPanel {
+    private static final int GRID_SIZE = GameConstants.GRID_SIZE;
     private static final int TILE_SIZE = GameConstants.TILE_SIZE;
     private static final int MARGIN = GameConstants.MARGIN;
     private static final int PANEL_SIZE = GameConstants.PANEL_SIZE;
 
-    private final GameBoard board;
+    private static final int ANIMATION_DURATION = 150;
+    private static final int FRAME_DELAY = 16;
+    private boolean isAnimating = false;
+    private List<AnimatedTileMove> animatedTileMoves = new ArrayList<>();
+    private long animationStartTime;
+    private Timer animationTimer;
+    private double animationProgress = 0;
 
-    public BoardPanel(GameBoard board, JPanel scorePanel){
-        this.board = board;
+    private final GameBoard gameBoard;
+
+    public BoardPanel(GameBoard gameBoard, JPanel scorePanel){
+        this.gameBoard = gameBoard;
         setPreferredSize(new Dimension(PANEL_SIZE, PANEL_SIZE));
         setBackground(new Color(153, 139, 124));
 
-        InputPanel.setupKeyListener(this, board, scorePanel);
-        InputPanel.setupMouseListener(this, board, scorePanel);
+        InputPanel.setupKeyListener(this, gameBoard, scorePanel);
+        InputPanel.setupMouseListener(this, gameBoard, scorePanel);
+    }
+
+    public void startMoveAnimation(List<AnimatedTileMove> tiles){
+        if(tiles == null || tiles.isEmpty()) return;
+
+        this.animatedTileMoves = tiles;
+        this.isAnimating = true;
+        this.animationStartTime = System.currentTimeMillis();
+
+        animationTimer = new Timer(FRAME_DELAY, e -> {
+            long elapsed = System.currentTimeMillis() - animationStartTime;
+            animationProgress = Math.min(1.0, (double) elapsed / ANIMATION_DURATION);
+
+            repaint();
+            if(animationProgress>=1.0){
+                animationTimer.stop();
+                isAnimating = false;
+                animatedTileMoves = null;
+                repaint();
+            }
+        });
+
+        animationTimer.start();
     }
 
     @Override
     protected void paintComponent(Graphics g) {
         super.paintComponent(g);
         Graphics2D g2d = (Graphics2D) g;
-        drawGrid(g2d);
+        g2d.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
 
-        if(GameStateChecker.isGameOver(board.getGrid())) {
-            GameOverOverlay.draw(g2d, board.getScore());
+        if (isAnimating) {
+            drawStaticTiles(g2d);
+            drawAnimatingTiles(g2d);
+        }else{
+            drawGrid(g2d);
+        }
+
+        if(GameStateChecker.isGameOver(gameBoard.getGrid())) {
+            GameOverOverlay.draw(g2d, gameBoard.getScore());
+        }
+    }
+
+    private void drawAnimatingTiles(Graphics2D g2d) {
+        for(AnimatedTileMove tile : gameBoard.getLastMoveTiles()){
+            int x = tile.getCurrentX(animationProgress);
+            int y = tile.getCurrentY(animationProgress);
+            int value = tile.getValue();
+            boolean isMerged = tile.isMerged();
+
+            if(isMerged && animationProgress>=1.0){
+                value*=2;
+            }
+
+            g2d.setColor(getTileColor(value));
+            g2d.fillRoundRect(x, y, TILE_SIZE, TILE_SIZE, 10, 10);
+            drawNumber(g2d, x, y, value);
+        }
+    }
+
+    private void drawStaticTiles(Graphics2D g2d) {
+        boolean[][] isMoving = new boolean[GRID_SIZE][GRID_SIZE];
+        for(AnimatedTileMove tile : gameBoard.getLastMoveTiles()){
+            isMoving[tile.getFromRow()][tile.getFromCol()] = true;
+        }
+        // 배경
+        for(int i=0; i<GRID_SIZE; i++){
+            for(int j=0; j<GRID_SIZE; j++){
+                Color color = getTileColor(0);
+                g2d.setColor(color);
+
+                int x = j*(TILE_SIZE + MARGIN) + MARGIN;
+                int y = i*(TILE_SIZE + MARGIN) + MARGIN;
+
+                g2d.fillRoundRect(x, y, TILE_SIZE, TILE_SIZE, 10, 10);
+            }
+        }
+
+        // 이동하지 않는 타일
+        for(int i=0; i<GRID_SIZE; i++){
+            for(int j=0; j<GRID_SIZE; j++){
+                int number = gameBoard.getNum(i,j);
+                if(number!=0 && !isMoving[i][j]){
+                    g2d.setColor(getTileColor(number));
+
+                    int x = j*(TILE_SIZE + MARGIN) + MARGIN;
+                    int y = i*(TILE_SIZE + MARGIN) + MARGIN;
+
+                    g2d.fillRoundRect(x, y, TILE_SIZE, TILE_SIZE, 10, 10);
+                    drawNumber(g2d, x, y, number);
+                }
+            }
         }
     }
 
     private void drawGrid(Graphics2D g2d) {
-        int GRID_SIZE = board.getSize();
+        int GRID_SIZE = gameBoard.getSize();
 
         for(int i=0; i<GRID_SIZE; i++){
             for(int j=0; j<GRID_SIZE; j++){
-                int number = board.getNum(i, j);
+                int number = gameBoard.getNum(i, j);
                 Color color = getTileColor(number);
                 g2d.setColor(color);
 
@@ -79,5 +172,9 @@ public class BoardPanel extends JPanel {
             case 2048 -> new Color(237, 194, 46);
             default -> new Color(60, 58, 50);
         };
+    }
+
+    public boolean isAnimating() {
+        return isAnimating;
     }
 }

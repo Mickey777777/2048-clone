@@ -4,12 +4,17 @@ import java.util.List;
 public class GameBoard {
     private static final int GRID_SIZE = GameConstants.GRID_SIZE;
     private final int[][] grid;
+    private List<AnimatedTileMove> lastMoveTiles = new ArrayList<>();
 
     private int score = 0;
 
     public GameBoard(){
         grid = new int[GRID_SIZE][GRID_SIZE];
         init();
+    }
+
+    public List<AnimatedTileMove> getLastMoveTiles(){
+        return lastMoveTiles;
     }
 
     private void init(){
@@ -82,29 +87,50 @@ public class GameBoard {
         }
     }
 
-    private boolean move(){
+    private Tile reverseTransform(int row, int col, int rightRotation){ // 회전한 좌표계를 역 연산을 통해 원상태로 복구
+        for(int i=0; i<rightRotation; i++){
+            int newRow = GRID_SIZE - 1 - col;
+            int newCol = row;
+            row = newRow;
+            col = newCol;
+        }
+        return new Tile(row, col);
+    }
+
+    private boolean move(int rightRotation){
         boolean[][] merged = new boolean[GRID_SIZE][GRID_SIZE];
+        lastMoveTiles.clear();
         boolean isMoved = false;
         for(int i=1; i<GRID_SIZE; i++){
             for(int j=0; j<GRID_SIZE; j++){
                 if(grid[i][j]!=0){
-                    int endY = i;
-                    while(endY>0) {
-                        if(grid[endY-1][j] == grid[endY][j] && !merged[endY-1][j]){
-                            grid[endY-1][j] += grid[endY][j];
-                            score += grid[endY-1][j];
-                            grid[endY][j] = 0;
-                            merged[endY-1][j] = true;
+                    Tile from = reverseTransform(i, j, rightRotation);
+                    int value = grid[i][j];
+                    int endRow = i;
+                    while(endRow>0) {
+                        if(grid[endRow-1][j] == grid[endRow][j] && !merged[endRow-1][j]){
+                            grid[endRow-1][j] += grid[endRow][j];
+                            score += grid[endRow-1][j];
+                            grid[endRow][j] = 0;
+                            merged[endRow-1][j] = true;
                             isMoved = true;
+
+                            Tile to = reverseTransform(endRow-1, j, rightRotation);
+                            lastMoveTiles.add(new AnimatedTileMove(from.getRow(), from.getCol(), to.getRow(), to.getCol(), true, value));
                             break;
-                        }else if(grid[endY-1][j] == 0){
-                            grid[endY-1][j] = grid[endY][j];
-                            grid[endY][j] = 0;
+                        }else if(grid[endRow-1][j] == 0){
+                            grid[endRow-1][j] = grid[endRow][j];
+                            grid[endRow][j] = 0;
                             isMoved = true;
                         }else{
                             break;
                         }
-                        endY--;
+                        endRow--;
+                    }
+                    
+                    if(i != endRow && !merged[endRow][j]){ // 이동을 한 경우
+                        Tile to = reverseTransform(endRow, j, rightRotation);
+                        lastMoveTiles.add(new AnimatedTileMove(from.getRow(), from.getCol(), to.getRow(), to.getCol(), false, value));
                     }
                 }
             }
@@ -113,13 +139,13 @@ public class GameBoard {
     }
 
     public void moveUp(){
-        if(move()) addRandomTile();
+        if(move(0)) addRandomTile();
     }
 
     public void moveDown(){
         rotateRight();
         rotateRight();
-        boolean moved = move();
+        boolean moved = move(2);
         rotateRight();
         rotateRight();
         if(moved) addRandomTile();
@@ -127,7 +153,7 @@ public class GameBoard {
 
     public void moveLeft(){
         rotateRight();
-        boolean moved = move();
+        boolean moved = move(1);
         rotateRight();
         rotateRight();
         rotateRight();
@@ -136,7 +162,7 @@ public class GameBoard {
 
     public void moveRight(){
         rotateLeft();
-        boolean moved = move();
+        boolean moved = move(3);
         rotateLeft();
         rotateLeft();
         rotateLeft();
