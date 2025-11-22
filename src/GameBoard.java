@@ -3,7 +3,7 @@ import java.util.List;
 
 public class GameBoard {
     private static final int GRID_SIZE = GameConstants.GRID_SIZE;
-    private int[][] grid;
+    private final int[][] grid;
 
     public GameBoard(){
         grid = new int[GRID_SIZE][GRID_SIZE];
@@ -15,15 +15,14 @@ public class GameBoard {
     }
 
     private void addRandomTile(){
+        if(!GameStateChecker.hasEmptyTiles(grid)) return;
         List<Tile> emptyTiles = getEmptyTiles();
-        if(emptyTiles.isEmpty()) return;
         Tile randomTile = emptyTiles.get((int) (Math.random() * emptyTiles.size()));
         grid[randomTile.getRow()][randomTile.getCol()] = 2;
     }
 
     private List<Tile> getEmptyTiles(){
         List<Tile> emptyTiles = new ArrayList<>();
-
         for(int i=0; i<GRID_SIZE; i++){
             for(int j=0; j<GRID_SIZE; j++){
                 if(grid[i][j] == 0) emptyTiles.add(new Tile(i, j));
@@ -33,7 +32,7 @@ public class GameBoard {
         return emptyTiles;
     }
 
-    public void rotateRight(){ // 시계방향
+    public void rotateLeft(){ // 반시계방향
         for(int i=0; i<GRID_SIZE; i++){
             for(int j=i; j<GRID_SIZE; j++){
                 int tmp = grid[i][j];
@@ -51,7 +50,7 @@ public class GameBoard {
         }
     }
 
-    public void rotateLeft(){ // 반시계방향
+    public void rotateRight(){ // 시계방향
         for(int i=0; i<GRID_SIZE; i++){
             for(int j=i; j<GRID_SIZE; j++){
                 int tmp = grid[i][j];
@@ -69,9 +68,9 @@ public class GameBoard {
         }
     }
 
-    public void moveUp(){
+    private boolean move(){
         boolean[][] merged = new boolean[GRID_SIZE][GRID_SIZE];
-
+        boolean isMoved = false;
         for(int i=1; i<GRID_SIZE; i++){
             for(int j=0; j<GRID_SIZE; j++){
                 if(grid[i][j]!=0){
@@ -81,10 +80,12 @@ public class GameBoard {
                             grid[endY-1][j] += grid[endY][j];
                             grid[endY][j] = 0;
                             merged[endY-1][j] = true;
+                            isMoved = true;
                             break;
                         }else if(grid[endY-1][j] == 0){
                             grid[endY-1][j] = grid[endY][j];
                             grid[endY][j] = 0;
+                            isMoved = true;
                         }else{
                             break;
                         }
@@ -93,31 +94,38 @@ public class GameBoard {
                 }
             }
         }
-        addRandomTile();
+        return isMoved;
+    }
+
+    public void moveUp(){
+        if(move()) addRandomTile();
     }
 
     public void moveDown(){
         rotateRight();
         rotateRight();
-        moveUp();
+        boolean moved = move();
         rotateRight();
         rotateRight();
+        if(moved) addRandomTile();
     }
 
     public void moveLeft(){
-        rotateLeft();
-        moveUp();
-        rotateLeft();
-        rotateLeft();
-        rotateLeft();
+        rotateRight();
+        boolean moved = move();
+        rotateRight();
+        rotateRight();
+        rotateRight();
+        if(moved) addRandomTile();
     }
 
     public void moveRight(){
-        rotateRight();
-        moveUp();
-        rotateRight();
-        rotateRight();
-        rotateRight();
+        rotateLeft();
+        boolean moved = move();
+        rotateLeft();
+        rotateLeft();
+        rotateLeft();
+        if(moved) addRandomTile();
     }
 
 
@@ -127,5 +135,9 @@ public class GameBoard {
 
     public int getSize(){
         return GRID_SIZE;
+    }
+
+    public int[][] getGrid(){
+        return grid;
     }
 }

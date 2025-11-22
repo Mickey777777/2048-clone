@@ -12,26 +12,30 @@ public class InputPanel {
                 switch (key) {
                     case KeyEvent.VK_UP:
                         System.out.println("UP");
-                        board.moveUp();
-                        panel.repaint();
+                        handleMove(board::moveUp, panel, board);
                         break;
                     case KeyEvent.VK_DOWN:
                         System.out.println("DOWN");
-                        board.moveDown();
-                        panel.repaint();
+                        handleMove(board::moveDown, panel, board);
                         break;
                     case KeyEvent.VK_LEFT:
                         System.out.println("LEFT");
-                        board.moveLeft();
-                        panel.repaint();
+                        handleMove(board::moveLeft, panel, board);
                         break;
                     case KeyEvent.VK_RIGHT:
                         System.out.println("RIGHT");
-                        board.moveRight();
-                        panel.repaint();
+                        handleMove(board::moveRight, panel, board);
                         break;
                 }
             }
         });
+    }
+
+    private static void handleMove(Runnable moveAction, JPanel panel, GameBoard board) {
+        moveAction.run();
+        if(GameStateChecker.isGameOver(board.getGrid())){
+            System.out.println("Game Over");
+        }
+        panel.repaint();
     }
 }
