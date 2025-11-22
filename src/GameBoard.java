@@ -3,7 +3,7 @@ import java.util.List;
 
 public class GameBoard {
     private static final int GRID_SIZE = GameConstants.GRID_SIZE;
-    private int[][] grid;
+    private final int[][] grid;
 
     public GameBoard(){
         grid = new int[GRID_SIZE][GRID_SIZE];
@@ -15,15 +15,14 @@ public class GameBoard {
     }
 
     private void addRandomTile(){
+        if(!GameStateChecker.hasEmptyTiles(grid)) return;
         List<Tile> emptyTiles = getEmptyTiles();
-        if(emptyTiles.isEmpty()) return;
         Tile randomTile = emptyTiles.get((int) (Math.random() * emptyTiles.size()));
         grid[randomTile.getRow()][randomTile.getCol()] = 2;
     }
 
     private List<Tile> getEmptyTiles(){
         List<Tile> emptyTiles = new ArrayList<>();
-
         for(int i=0; i<GRID_SIZE; i++){
             for(int j=0; j<GRID_SIZE; j++){
                 if(grid[i][j] == 0) emptyTiles.add(new Tile(i, j));
@@ -33,7 +32,7 @@ public class GameBoard {
         return emptyTiles;
     }
 
-    public void rotateRight(){ // 시계방향
+    public void rotateLeft(){ // 반시계방향
         for(int i=0; i<GRID_SIZE; i++){
             for(int j=i; j<GRID_SIZE; j++){
                 int tmp = grid[i][j];
@@ -51,7 +50,7 @@ public class GameBoard {
         }
     }
 
-    public void rotateLeft(){ // 반시계방향
+    public void rotateRight(){ // 시계방향
         for(int i=0; i<GRID_SIZE; i++){
             for(int j=i; j<GRID_SIZE; j++){
                 int tmp = grid[i][j];
@@ -69,7 +68,7 @@ public class GameBoard {
         }
     }
 
-    public void moveUp(){
+    private void move(){
         boolean[][] merged = new boolean[GRID_SIZE][GRID_SIZE];
 
         for(int i=1; i<GRID_SIZE; i++){
@@ -93,31 +92,35 @@ public class GameBoard {
                 }
             }
         }
-        addRandomTile();
+    }
+
+    public void moveUp(){
+        move();
+        
     }
 
     public void moveDown(){
         rotateRight();
         rotateRight();
-        moveUp();
+        move();
         rotateRight();
         rotateRight();
     }
 
     public void moveLeft(){
-        rotateLeft();
-        moveUp();
-        rotateLeft();
-        rotateLeft();
-        rotateLeft();
+        rotateRight();
+        move();
+        rotateRight();
+        rotateRight();
+        rotateRight();
     }
 
     public void moveRight(){
-        rotateRight();
-        moveUp();
-        rotateRight();
-        rotateRight();
-        rotateRight();
+        rotateLeft();
+        move();
+        rotateLeft();
+        rotateLeft();
+        rotateLeft();
     }
 
 
