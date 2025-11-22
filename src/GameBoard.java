@@ -5,6 +5,8 @@ public class GameBoard {
     private static final int GRID_SIZE = GameConstants.GRID_SIZE;
     private final int[][] grid;
 
+    private int score = 0;
+
     public GameBoard(){
         grid = new int[GRID_SIZE][GRID_SIZE];
         init();
@@ -12,13 +14,15 @@ public class GameBoard {
 
     private void init(){
         addRandomTile();
+        addRandomTile();
     }
 
     private void addRandomTile(){
         if(!GameStateChecker.hasEmptyTiles(grid)) return;
         List<Tile> emptyTiles = getEmptyTiles();
         Tile randomTile = emptyTiles.get((int) (Math.random() * emptyTiles.size()));
-        grid[randomTile.getRow()][randomTile.getCol()] = 2;
+        int value = Math.random() < 0.9 ? 2 : 4;
+        grid[randomTile.getRow()][randomTile.getCol()] = value;
     }
 
     private List<Tile> getEmptyTiles(){
@@ -78,6 +82,8 @@ public class GameBoard {
                     while(endY>0) {
                         if(grid[endY-1][j] == grid[endY][j] && !merged[endY-1][j]){
                             grid[endY-1][j] += grid[endY][j];
+                            score += grid[endY-1][j];
+                            System.out.println(score);
                             grid[endY][j] = 0;
                             merged[endY-1][j] = true;
                             isMoved = true;
@@ -139,5 +145,9 @@ public class GameBoard {
 
     public int[][] getGrid(){
         return grid;
+    }
+
+    public int getScore(){
+        return score;
     }
 }
