@@ -14,6 +14,7 @@ public class BoardPanel extends JPanel {
         setBackground(new Color(153, 139, 124));
 
         InputPanel.setupKeyListener(this, board, scorePanel);
+        InputPanel.setupMouseListener(this, board, scorePanel);
     }
 
     @Override
