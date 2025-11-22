@@ -36,6 +36,16 @@ public class GameBoard {
         return emptyTiles;
     }
 
+    public void reset(){
+        score = 0;
+        for(int i=0; i<GRID_SIZE; i++){
+            for(int j=0; j<GRID_SIZE; j++){
+                grid[i][j] = 0;
+            }
+        }
+        init();
+    }
+
     public void rotateLeft(){ // 반시계방향
         for(int i=0; i<GRID_SIZE; i++){
             for(int j=i; j<GRID_SIZE; j++){
