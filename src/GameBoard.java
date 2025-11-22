@@ -83,7 +83,6 @@ public class GameBoard {
                         if(grid[endY-1][j] == grid[endY][j] && !merged[endY-1][j]){
                             grid[endY-1][j] += grid[endY][j];
                             score += grid[endY-1][j];
-                            System.out.println(score);
                             grid[endY][j] = 0;
                             merged[endY-1][j] = true;
                             isMoved = true;

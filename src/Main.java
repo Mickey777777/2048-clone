@@ -5,8 +5,8 @@ public class Main {
     public static void main(String[] args) {
         JFrame frame = new JFrame();
         GameBoard gameBoard = new GameBoard();
-        BoardPanel boardPanel = new BoardPanel(gameBoard);
-        ScorePanel scorePanel = new ScorePanel();
+        ScorePanel scorePanel = new ScorePanel(gameBoard);
+        BoardPanel boardPanel = new BoardPanel(gameBoard, scorePanel);
 
         frame.setLayout(new BorderLayout());
         frame.add(scorePanel, BorderLayout.NORTH);
