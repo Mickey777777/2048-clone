@@ -9,7 +9,7 @@ public class BoardPanel extends JPanel {
     private static final int MARGIN = GameConstants.MARGIN;
     private static final int PANEL_SIZE = GameConstants.PANEL_SIZE;
 
-    private static final int ANIMATION_DURATION = 150;
+    private static final int ANIMATION_DURATION = 100;
     private static final int FRAME_DELAY = 16;
     private boolean isAnimating = false;
     private List<AnimatedTileMove> animatedTileMoves = new ArrayList<>();
