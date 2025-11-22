@@ -58,12 +58,13 @@ public class InputPanel {
         });
     }
 
-    private static void handleMove(Runnable moveAction, JPanel panel, GameBoard gameBoard, JPanel scorePanel) {
+    private static void handleMove(Runnable moveAction, JPanel boardPanel, GameBoard gameBoard, JPanel scorePanel) {
         moveAction.run();
         if(GameStateChecker.isGameOver(gameBoard.getGrid())){
+            ((ScorePanel) scorePanel).updateBest(gameBoard.getScore());
             System.out.println("Game Over");
         }
-        panel.repaint();
+        boardPanel.repaint();
         scorePanel.repaint();
     }
 }

@@ -8,7 +8,7 @@ public class ScorePanel extends JPanel {
     private static final int BOX_WIDTH = 80;
     private static final int BOX_HEIGHT = 50;
     private static final int BOX_MARGIN = 50;
-    private int best = 0;
+    private int best = ScoreManager.loadBest();
 
     GameBoard board;
 
@@ -63,5 +63,12 @@ public class ScorePanel extends JPanel {
         fontY = y + (BOX_HEIGHT - fm.getHeight()) / 2 + fm.getAscent() + 10;
 
         g2d.drawString(scoreString, fontX, fontY);
+    }
+
+    public void updateBest(int score){
+        if(score > best) {
+            best = score;
+            ScoreManager.saveBest(score);
+        }
     }
 }
